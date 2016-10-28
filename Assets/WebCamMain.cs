@@ -18,6 +18,7 @@ public class WebCamMain : MonoBehaviour {
 	
 	
 	bool bOnOffDisplay;
+	public bool bFreezeCube = false;
 
 	#region  Image Pixel Processing  manually
     //private Color[] pixels;
@@ -67,6 +68,8 @@ public class WebCamMain : MonoBehaviour {
 
 			for(int j =0 ; j < Cam_height/10 ; j++)
 			{
+				PixelCubePrefab.AddComponent<Rigidbody>();
+				PixelCubePrefab.GetComponent<Rigidbody>().useGravity = false;
 
 				Array_PixelCube[i][j] = (GameObject)Instantiate( PixelCubePrefab, new Vector3(  i*0.5f, j*0.5f,0f),Quaternion.identity); 
 				
@@ -99,6 +102,8 @@ public class WebCamMain : MonoBehaviour {
 					if(obj)
 					{
 							obj.gameObject.GetComponent<Renderer>().material.color=   frontTex.GetPixel( i*4 ,j*3 )  ;
+							
+						if(bFreezeCube)
 							obj.position = new Vector3(obj.position.x,obj.position.y,    obj.gameObject.GetComponent<Renderer>().material.color.grayscale*2 );
 					}
 				}
@@ -110,11 +115,32 @@ public class WebCamMain : MonoBehaviour {
 	
 	void OnGUI()
 	{
-		if( GUI.Button( new Rect(0,0,100,30), "on/close"))
+		if( GUI.Button( new Rect(50,0,150,50), "on/close"))
 		{
 			bOnOffDisplay = !bOnOffDisplay;
 			ShowContentTexture.enabled = bOnOffDisplay;
 		}
+
+
+		if( GUI.Button( new Rect(50,100,150,50), "Feeeze the Cube"))
+		{
+			bFreezeCube = !bFreezeCube;
+		}
+
+
+		if( GUI.Button( new Rect(50,200,150,50), "Open/Close Phys"))
+		{
+			for(int i =0 ; i < Cam_width/10 ; i++)
+			{
+				for(int j =0 ; j < Cam_height/10 ; j++)
+				{
+					bool bSwithGravity = ((GameObject)Array_PixelCube[i][j]).GetComponent<Rigidbody>().useGravity;
+					((GameObject)Array_PixelCube[i][j]).GetComponent<Rigidbody>().useGravity = !bSwithGravity;
+				}
+			}
+
+		}
+
 		
 		
 	}
